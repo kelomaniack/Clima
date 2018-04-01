@@ -17,6 +17,27 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate, Change
     let WEATHER_URL = "http://api.openweathermap.org/data/2.5/weather"
     let APP_ID = "090ccfddb9a1910058c1c84625e2e72f"
     
+    @IBAction func `switch`(_ sender: UISwitch) {
+        if sender.isOn {
+            print("Celcius")
+            updateUIWithWeatherData()
+        }
+        else {
+            print("Fahreneit")
+            let tempInFahreneit = String(convertToFahreneit(celcius: Int(Double(temperatureLabel.text!.substring(to: temperatureLabel.text!.index(before: temperatureLabel.text!.endIndex)))!))) + "°"
+            temperatureLabel.text = tempInFahreneit
+            
+            print("tempInFahreneit: \(tempInFahreneit)")
+        }
+    }
+    
+    func convertToCelsius(fahrenheit: Int) -> Int {
+        return Int(5.0 / 9.0 * (Double(fahrenheit) - 32.0))
+    }
+    
+    func convertToFahreneit(celcius: Int) -> Int {
+        return Int(9.0 / 5.0 * (Double(celcius) + 32.0))
+    }
     
     //TODO: Declare instance variables here
     let locationManager = CLLocationManager()
@@ -104,7 +125,7 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate, Change
     func updateUIWithWeatherData() {
         
         cityLabel.text = weatherDataModel.city
-        temperatureLabel.text = "\(weatherDataModel.temperature)"
+        temperatureLabel.text = "\(weatherDataModel.temperature)°"
         weatherIcon.image = UIImage(named: weatherDataModel.weatherIconName)
     }
     
@@ -148,7 +169,10 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate, Change
     
     //Write the userEnteredANewCityName Delegate method here:
     func userEnteredANewCityName(city: String) {
-        print(city)
+        
+        let params: [String : String] = ["q" : city, "appid" : APP_ID]
+        
+        getWeatherData(url: WEATHER_URL, parameters: params)
     }
     
     
@@ -159,7 +183,7 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate, Change
             
             destinationVC.delegate = self
         }
-    }   
+    }
 }
 
 
